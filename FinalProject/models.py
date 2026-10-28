@@ -18,10 +18,10 @@ class Question(models.Model):
     lessons = models.ManyToManyField(Lesson)
 
     question_text = models.CharField(max_length=500)
-    question_point = models.IntegerField(default=1)
+    grade = models.IntegerField(default=1)
 
     def is_get_score(self, selected_ids):
-        """Checks if the student selected all the correct answers."""
+        """Checks whether the student selected all correct answers."""
         all_answers = self.choice_set.filter(is_correct=True).count()
         selected_correct = self.choice_set.filter(
             is_correct=True,
@@ -30,10 +30,7 @@ class Question(models.Model):
 
         selected_total = len(selected_ids)
 
-        if all_answers == selected_correct and selected_total == all_answers:
-            return True
-        else:
-            return False
+        return all_answers == selected_correct and selected_total == all_answers
 
     def __str__(self):
         return self.question_text
@@ -43,7 +40,7 @@ class Choice(models.Model):
     # One-to-many relationship between Question and Choice
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
-    choice_text = models.CharField(max_length=200)
+    choice_text = models.CharField(max_length=100)
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
@@ -58,4 +55,4 @@ class Submission(models.Model):
     choices = models.ManyToManyField(Choice)
 
     def __str__(self):
-        return f"Submission {self.id}"
+        return f"Submission for Enrollment {self.enrollment.id}"
